@@ -1,0 +1,21 @@
+{
+    "welcomeMessage": "Hello World",
+    "jobs": [
+        {
+            "name": "OPL",
+            "executeTime": "0 0 0 0 0 0",
+            "monitorStart": "20:00:00",
+            "monitorEnd": "23:05:00",
+            "reactionSet": "goodEmojis",
+            "userPlaces": "3",
+            "commentPlaces" : "3"
+        }
+    ],
+    "reactions": [
+        {
+            "name": "goodEmojis",
+            "goodEmojis": ["✅"],
+            "badEmojis": ["⛔"]
+        }
+    ]
+}

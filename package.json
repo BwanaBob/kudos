@@ -1,0 +1,23 @@
+{
+  "name": "kudos",
+  "version": "1.0.0",
+  "description": "A discord bot that recognizes people for their positive contributions to the server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BwanaBob/kudos.git"
+  },
+  "author": "Bwana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BwanaBob/kudos/issues"
+  },
+  "homepage": "https://github.com/BwanaBob/kudos#readme",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
+  }
+}
