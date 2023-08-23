@@ -1,5 +1,12 @@
 {
     "welcomeMessage": "Hello World",
+    "excludeRoles": ["Moderator", "Administrator"],
+    "excluteBots": "true",
+    "embeds":  {
+        "results": {
+            "color": "000000"
+        }
+    },
     "jobs": [
         {
             "name": "OPL",
@@ -8,14 +15,18 @@
             "monitorEnd": "23:05:00",
             "reactionSet": "goodEmojis",
             "userPlaces": "3",
-            "commentPlaces" : "3"
+            "commentPlaces": "3"
         }
     ],
     "reactions": [
         {
             "name": "goodEmojis",
-            "goodEmojis": ["✅"],
-            "badEmojis": ["⛔"]
+            "goodEmojis": [
+                "✅"
+            ],
+            "badEmojis": [
+                "⛔"
+            ]
         }
     ]
 }
