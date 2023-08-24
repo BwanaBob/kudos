@@ -17,8 +17,7 @@ const client = new Client({
   ],
 });
 
-const options = require("./options.json"); // start replacing .env variables and client.params with this
-console.log(options.welcomeMessage);
+const options = require("./options.json");
 
 //events handler
 const eventsPath = path.join(__dirname, "src/events");
@@ -52,7 +51,7 @@ for (const file of commandFiles) {
   if ("data" in command && "execute" in command) {
     client.commands.set(command.data.name, command);
     const cLoadedDate = new Date().toLocaleString();
-    console.log(`[${cLoadedDate}] 💻 COMAND| Command Loaded| ${command.data.name}`)
+    console.log(`[${cLoadedDate.padEnd(23)}] 💻 COMAND| Command Loaded| ${command.data.name}`)
   } else {
     console.log(
       `⛔ [WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`

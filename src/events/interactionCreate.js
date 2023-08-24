@@ -15,11 +15,11 @@ module.exports = {
             const logDate = new Date(interaction.createdTimestamp).toLocaleString();
             if (!interaction.guild) {
                 console.log(
-                    `[${logDate}] 💻 COMAND| Private Message | ${interaction.user.tag} | ${interaction.commandName}`
+                    `[${logDate.padEnd(23)}] 💻 COMAND| Private Message | ${interaction.user.tag} | ${interaction.commandName}`
                 );
             } else {
                 console.log(
-                    `[${logDate}] 💻 COMAND| ${interaction.guild.name} | ${interaction.channel.name} | ${interaction.member.displayName} (${interaction.user.tag}) | ${interaction.commandName}`
+                    `[${logDate.padEnd(23)}] 💻 COMAND| ${interaction.guild.name} | ${interaction.channel.name} | ${interaction.member.displayName} (${interaction.user.tag}) | ${interaction.commandName}`
                 );
             }
 

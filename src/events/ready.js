@@ -8,11 +8,11 @@ module.exports = {
   execute(client) {
     var startDate = new Date();
     console.log(
-      `[${startDate.toLocaleString()}] 🤖 START | Bot Logged In | ${client.user.username} (${client.user.tag})`
+      `[${startDate.toLocaleString().padEnd(23)}] 🤖 START | Bot Logged In | ${client.user.username} (${client.user.tag})`
     );
 
     client.guilds.cache.forEach((guild) => {
-      console.log(`[${startDate.toLocaleString()}] 🖥️  GUILD | Guild Joined  | ${guild.name} (${guild.memberCount})`);
+      console.log(`[${startDate.toLocaleString().padEnd(23)}] 🖥️  GUILD | Guild Joined  | ${guild.name} (${guild.memberCount})`);
     });
 
     // //jobs handler

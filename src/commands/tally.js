@@ -11,19 +11,34 @@ async function getStarCount(startDate, endDate, interaction) {
     "endDate": endDate,
     "messages": 0,
     "stars": 0,
-    "starred": 0
+    "starred": 0,
+    "messagesRetrieved": 0
   };
-  const messages = await interaction.channel.messages.fetch({ limit: 20 });
-  starStats.messages += messages.size;
-  messages.forEach((message) => {
-    // console.log(message.content);
-    const starCount = message.reactions.cache.get('⭐')?.count ?? 0;
-    if (starCount > 0) {
-      starStats.stars += starCount;
-      starStats.starred += 1;
-      // console.log(starCount);
-    };
-  })
+  let lastId;
+  let startDateReached = false;
+  let messagesFetched = 0;
+  while (!startDateReached) {
+    const messages = await interaction.channel.messages.fetch({ limit: 20, before: lastId });
+    messagesFetched += messages.size;
+    starStats.messagesRetrieved = messagesFetched;
+    lastId = messages.last().id;
+    messages.forEach((message) => {
+      // console.log(message.content);
+      // console.log(`Created: ${message.createdTimestamp / 1000} End: ${endDate} good: ${message.createdTimestamp/1000 < endDate}:${message.createdTimestamp/1000 > startDate}`);
+      if (message.createdTimestamp / 1000 > endDate) { return; }
+      if (message.createdTimestamp / 1000 < startDate) { startDateReached = true; return; }
+      starStats.messages += 1;
+      const starCount = message.reactions.cache.get('⭐')?.count ?? 0;
+      if (starCount > 0) {
+        starStats.stars += starCount;
+        starStats.starred += 1;
+      };
+    })
+    if (messages.size != 20 || messagesFetched >= 100) {
+      sleep(10000);
+      break;
+    }
+  }
   return starStats;
 }
 
@@ -35,29 +50,44 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   async execute(interaction) {
-    // const startDate = new Date();
-    const startDate = new Date( Date.now() - 1000 * 60 * 60 * 2 );
-    const endDate = new Date();
+    // var startDate = Math.floor(new Date().setHours(20, 0, 0) / 1000);
+    // var endDate = Math.floor(new Date().setHours(23, 5, 0) / 1000);
+    var startDate = Math.floor(new Date().setHours(2, 0, 0) / 1000);
+    var endDate = Math.floor(new Date().setHours(20, 5, 0) / 1000);
+    startDate -= 60 * 60 * 24;
+
+    if (endDate > Math.floor(new Date() / 1000)) {
+      endDate -= 60 * 60 * 24;
+      startDate -= 60 * 60 * 24;
+    }
     const starStats = await getStarCount(startDate, endDate, interaction);
 
     const serverEmbed = new EmbedBuilder()
       .setColor(0x55e6d4)
       .setTitle("Star Tally")
       .addFields({
+        name: "Date",
+        value: `<t:${starStats.startDate}:d>`,
+        inline: true,
+      })
+      .addFields({
         name: "Start",
-        value: `${starStats.startDate}`,
+        value: `<t:${starStats.startDate}:t>`,
         inline: true,
-      })
-      .addFields({
+      },{
         name: "End",
-        value: `${starStats.endDate}`,
+        value: `<t:${starStats.endDate}:t>`,
         inline: true,
-      })
-      .addFields({
+      },{
         name: "Messages",
         value: `${starStats.messages}`,
-        inline: false,
+        inline: true,
+      },{
+        name: "Retrieved",
+        value: `${starStats.messagesRetrieved}`,
+        inline: true,
       })
+      // .addFields({ name: '\u200b', value: '\u200b' })
       .addFields({
         name: "Starred Messages",
         value: `${starStats.starred}`,
@@ -69,9 +99,9 @@ module.exports = {
         inline: true,
       })
       .setTimestamp()
-      // .setThumbnail(interaction.guild.iconURL())
-      // .setFooter({ text: `Established: ${interaction.guild.createdAt}` });
+    // .setThumbnail(interaction.guild.iconURL())
+    // .setFooter({ text: `Established: ${interaction.guild.createdAt}` });
 
-    await interaction.reply({ embeds: [serverEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [serverEmbed], ephemeral: false });
   },
 };
