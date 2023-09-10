@@ -1,8 +1,27 @@
 const {
   SlashCommandBuilder,
-  PermissionFlagsBits, EmbedBuilder
+  PermissionFlagsBits,
+  EmbedBuilder
 } = require("discord.js");
 
+function getTop(entities, ranks) {
+  var arrayLength = entities.length;
+  var thisRank = 1;
+  var returnObj = entities;
+
+  for (var i = 0; i < arrayLength; i++) {
+    if (i == 0) { continue };
+    // console.log(`Last: ${entities[i - 1]} - This: ${entities[i]}`)
+    if (entities[i - 1][1] !== entities[i][1]) {
+      thisRank += 1;
+      if (thisRank > ranks) {
+        returnObj = entities.slice(0, i);
+        break;
+      }
+    }
+  }
+  return returnObj;
+}
 
 async function getStarCount(startDate, endDate, interaction) {
   // const afterDate = new Date();
@@ -13,8 +32,8 @@ async function getStarCount(startDate, endDate, interaction) {
     "stars": 0,
     "starred": 0,
     "messagesRetrieved": 0,
-    "messages": [],
-    "users": []
+    "messages": {},
+    "users": {}
   };
   let lastId;
   let startDateReached = false;
@@ -34,8 +53,8 @@ async function getStarCount(startDate, endDate, interaction) {
       if (starCount > 0) {
         starStats.stars += starCount;
         starStats.starred += 1;
-        starStats.messages.push({"id": message.id, "stars" : starCount});
-        if(message.author.id in starStats.users){
+        starStats.messages[message.id] = starCount;
+        if (message.author.id in starStats.users) {
           starStats.users[message.author.id] += starCount;
         } else {
           starStats.users[message.author.id] = starCount;
@@ -62,7 +81,7 @@ module.exports = {
     var endDate = Math.floor(new Date().setHours(23, 5, 0) / 1000);
     // var startDate = Math.floor(new Date().setHours(2, 0, 0) / 1000);
     // var endDate = Math.floor(new Date().setHours(23, 5, 0) / 1000);
-    startDate -= 60 * 60 * 24;
+    // startDate -= 60 * 60 * 24 * 4;
 
     if (endDate > Math.floor(new Date() / 1000)) {
       endDate -= 60 * 60 * 24;
@@ -82,19 +101,21 @@ module.exports = {
         name: "Start",
         value: `<t:${starStats.startDate}:t>`,
         inline: true,
-      },{
+      }, {
         name: "End",
         value: `<t:${starStats.endDate}:t>`,
         inline: true,
-      },{
+      }, {
         name: "Messages",
         value: `${starStats.messagesEligible}`,
         inline: true,
-      },{
-        name: "Retrieved",
-        value: `${starStats.messagesRetrieved}`,
-        inline: true,
-      })
+      },
+        // {
+        //   name: "Retrieved",
+        //   value: `${starStats.messagesRetrieved}`,
+        //   inline: true,
+        // }
+      )
       // .addFields({ name: '\u200b', value: '\u200b' })
       .addFields({
         name: "Starred Messages",
@@ -110,7 +131,25 @@ module.exports = {
     // .setThumbnail(interaction.guild.iconURL())
     // .setFooter({ text: `Established: ${interaction.guild.createdAt}` });
 
-    await interaction.reply({ embeds: [serverEmbed], ephemeral: true });
     // console.log(starStats);
+    const sortedUsers = Object.entries(starStats.users).sort((x, y) => y[1] - x[1]);
+    // console.log(sortedUsers);
+    const sortedMessages = Object.entries(starStats.messages).sort((x, y) => y[1] - x[1]);
+    // console.log(sortedmessages);
+    const topUsers = getTop(sortedUsers, 3);
+    const topMessages = getTop(sortedMessages, 3);
+    var embedContent = "Top Users:";
+    topUsers.forEach(element => {
+      embedContent += `\n<@${element[0]}> - ${element[1]}`
+    });
+    embedContent += "\n\nTop Messages:";
+    topMessages.forEach(element => {
+      const thisLink = interaction.channel.messages.cache.get(element[0]).url
+      embedContent += `\n[Link](${thisLink}) - ${element[1]}`
+    });
+
+
+    serverEmbed.setDescription(embedContent);
+    await interaction.reply({ embeds: [serverEmbed], ephemeral: true });
   },
 };
